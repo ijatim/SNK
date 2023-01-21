@@ -1,0 +1,2 @@
+class NotDefinedRepositoryError(Exception):
+    pass

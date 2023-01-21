@@ -1,0 +1,70 @@
+version: '3'
+
+services:
+
+  first_db:
+    container_name: first_db
+    image: postgres:13.5
+    restart: unless-stopped
+    env_file:
+      - .env
+    networks:
+      snk-network:
+        ipv4_address: 172.21.0.2
+
+  second_db:
+    container_name: second_db
+    image: postgres:13.5
+    restart: unless-stopped
+    env_file:
+      - .env
+    networks:
+      snk-network:
+        ipv4_address: 172.21.0.3
+
+  snk_redis:
+    container_name : snk_redis
+    image: redis:5.0.14
+    restart: unless-stopped
+    networks:
+      snk-network:
+        ipv4_address: 172.21.0.6
+
+  snk_service:
+    container_name: snk_service
+    build: .
+    restart: unless-stopped
+    depends_on:
+      - first_db
+      - second_db
+      - snk_redis
+    volumes:
+      - .:/app
+    command: ["python", "/app/snk_app.py"]
+    env_file:
+      - .env
+    networks:
+      snk-network:
+        ipv4_address: 172.21.0.4
+
+  tst_service:
+    container_name: tst_service
+    build: .
+    restart: unless-stopped
+    depends_on:
+      - first_db
+      - second_db
+    volumes:
+      - .:/app
+    command: ["python", "/app/tst_app.py"]
+    env_file:
+      - .env
+    networks:
+      snk-network:
+        ipv4_address: 172.21.0.5
+
+networks:
+  snk-network:
+    ipam:
+      config:
+        - subnet: 172.21.0.0/16

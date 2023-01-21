@@ -1,0 +1,6 @@
+async-timeout==4.0.2
+envparse==0.2.0
+greenlet==2.0.1
+psycopg2-binary==2.9.5
+redis==4.4.2
+SQLAlchemy==1.4.46
