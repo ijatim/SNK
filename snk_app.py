@@ -19,7 +19,7 @@ redis_cache = cache.RedisCache(host=REDIS_HOST, port=REDIS_PORT)
 if __name__ == "__main__":
     orm.start_mappers()
 
-    redis_cache._redis.flushdb()
+    redis_cache.flush()
 
     with uow.SqlAlchemyUnitOfWork(first_db_engine) as first_db_uow:
         with uow.SqlAlchemyUnitOfWork(second_db_engine) as second_db_uow:

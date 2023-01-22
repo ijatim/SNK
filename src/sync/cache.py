@@ -1,10 +1,5 @@
 import abc
-from typing import Set, Tuple
-from uuid import UUID
-
 import redis
-
-lately_synced_value_objects: Set[Tuple[UUID, str]] = set()
 
 
 class AbstractCache(abc.ABC):
@@ -28,6 +23,10 @@ class AbstractCache(abc.ABC):
     @second_database_last_synced_value_object_id.setter
     def second_database_last_synced_value_object_id(self, value):
         self.set(key=self.SECOND_DATABASE_LAST_SYNCED_VALUE_OBJECT_ID_KEY, value=value)
+
+    @abc.abstractmethod
+    def flush(self):
+        raise NotImplementedError
 
     @abc.abstractmethod
     def set(self, key, value):
@@ -74,7 +73,5 @@ class RedisCache(AbstractCache):
         if args:
             return self._redis.delete(*args)
 
-
-# These two should be persisted in production environment
-# first_database_last_synced_value_object_id = 0
-# second_database_last_synced_value_object_id = 0
+    def flush(self):
+        self._redis.flushdb()
